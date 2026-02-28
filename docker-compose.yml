@@ -1,0 +1,33 @@
+services:
+  application_service:
+    build: .
+    container_name: application_service
+    env_file:
+      - .env.docker
+    ports:
+      - "8005:8000"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - application_network
+
+  db:
+    image: postgres:15
+    container_name: application_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pooja521689
+      POSTGRES_DB: healthcare_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - application_network
+ 
+volumes:
+  postgres_data:
+ 
+networks:
+  application_network:
