@@ -1,0 +1,8 @@
+ROLE_ADMIN = "admin"
+ROLE_DOCTOR = "doctor"
+ROLE_PATIENT = "patient"
+
+APPOINTMENT_PENDING = "pending"
+APPOINTMENT_CONFIRMED = "confirmed"
+APPOINTMENT_COMPLETED = "completed"
+APPOINTMENT_CANCELLED = "cancelled"
