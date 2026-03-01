@@ -1,33 +1,86 @@
-services:
-  application_service:
-    build: .
-    container_name: application_service
-    env_file:
-      - .env.docker
-    ports:
-      - "8005:8000"
-    depends_on:
-      - db
-    restart: always
-    networks:
-      - application_network
+version: '3.8'
 
+services:
   db:
     image: postgres:15
-    container_name: application_db
+    container_name: healthcare_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pooja521689
       POSTGRES_DB: healthcare_db
     ports:
-      - "5436:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - application_network
- 
+      - healthcare_network
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth_service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    env_file:
+      - ./auth-service/.env.docker
+    networks:
+      - healthcare_network
+
+  user-service:
+    build: ./user-service
+    container_name: user_service
+    ports:
+      - "8002:8002"
+    depends_on:
+      - db
+    env_file:
+      - ./user-service/.env.docker
+    networks:
+      - healthcare_network
+
+  appointment-service:
+    build: ./appointment-service
+    container_name: appointment_service
+    ports:
+      - "8003:8003"
+    depends_on:
+      - db
+    env_file:
+      - ./appointment-service/.env.docker
+    networks:
+      - healthcare_network
+
+  prescription-service:
+    build: ./prescription-service
+    container_name: prescription_service
+    ports:
+      - "8004:8004"
+    depends_on:
+      - db
+    env_file:
+      - ./prescription-service/.env.docker
+    networks:
+      - healthcare_network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-service
+      - user-service
+      - appointment-service
+      - prescription-service
+    env_file:
+      - ./api-gateway/.env.docker
+    networks:
+      - healthcare_network
+
 volumes:
   postgres_data:
- 
+
 networks:
-  application_network:
+  healthcare_network:
+    driver: bridge
